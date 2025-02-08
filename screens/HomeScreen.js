@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Text } from 'react-native';
 import MovieCard from '../compenents/MovieCard';
-import { getAllMovies } from '../services/MovieApi'; // getAllMovies fonksiyonu
+import { getAllMovies } from '../services/MovieApi';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const HomeScreen = () => {
@@ -10,9 +10,15 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const fetchMovies = async () => {
-      const movieData = await getAllMovies(); // Tüm filmleri çekiyoruz
-      setMovies(movieData);
-      setLoading(false);
+      try {
+        const movieData = await getAllMovies();
+        console.log('Movie Data:', movieData); // Verileri konsola yazdır
+        setMovies(movieData);
+      } catch (error) {
+        console.error('Error fetching movies:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchMovies();
@@ -33,7 +39,7 @@ const HomeScreen = () => {
         <FlatList
           data={movies}
           renderItem={renderMovie}
-          keyExtractor={(item) => item.imdbID}
+          keyExtractor={(item) => item.id.toString()} // item.id'yi string'e çevir
           numColumns={2}
         />
       )}

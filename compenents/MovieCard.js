@@ -1,35 +1,52 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Share } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const MovieCard = ({ movie }) => {
+  const shareMovie = async () => {
+    try {
+      await Share.share({
+        message: `Check out this movie: ${movie.original_title}`,
+      });
+    } catch (error) {
+      console.error('Error sharing movie:', error);
+    }
+  };
+  const favoriyeekle = async () => {
+   
+  };
+
+
   return (
     <View style={styles.card}>
       {/* Film Resmi */}
-      <Image source={{ uri: movie.Poster }} style={styles.image} />
+      <Image source={{ uri: movie.poster_path }} style={styles.image} />
 
       <View style={styles.info}>
         {/* Film Adı */}
-        <Text style={styles.title}>{movie.Title}</Text>
+        <Text style={styles.title}>{movie.original_title}</Text>
 
-        {/* Yönetmen */}
-        <Text style={styles.director}>
-          {movie.Director ? `Director: ${movie.Director}` : 'Director: N/A'}
+        {/* Çıkış Tarihi */}
+        <Text style={styles.releaseDate}>
+          Release Date: {movie.release_date}
         </Text>
 
+        
         {/* IMDb Puanı */}
-        <Text style={styles.imdb}>
-          IMDb: {movie.imdbRating ? movie.imdbRating : 'N/A'}
+        <Text style={styles.rating}>
+          Rating: {movie.vote_average ? movie.vote_average : 'N/A'}
         </Text>
       </View>
 
       {/* Kalp Butonu */}
-      <TouchableOpacity style={styles.heartButton}>
+      <TouchableOpacity style={styles.heartButton} onPress={favoriyeekle}>
         <Ionicons name="heart-outline" size={24} color="tomato" />
       </TouchableOpacity>
 
-      
-
+      {/* Paylaş Butonu */}
+      <TouchableOpacity style={styles.shareButton} onPress={shareMovie}>
+        <Ionicons name="share-social-outline" size={24} color="blue" />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -38,7 +55,7 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     margin: 10,
-    backgroundColor: '#3b8d99', // Tek renk arka plan
+    backgroundColor: '#3b8d99',
     borderRadius: 15,
     overflow: 'hidden',
     shadowColor: '#000',
@@ -58,11 +75,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  director: {
+  releaseDate: {
     fontSize: 14,
     color: 'black',
   },
-  imdb: {
+  rating: {
     fontSize: 14,
     color: 'orange',
   },
@@ -70,6 +87,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
+    padding: 5,
+  },
+  shareButton: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
     padding: 5,
   },
 });
