@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Text } from 'react-native';
 import MovieCard from '../compenents/MovieCard';
-import { getMovies } from '../services/MovieApi';
-import { LinearGradient } from 'expo-linear-gradient'; // LinearGradient import ettik
+import { getAllMovies } from '../services/MovieApi'; // getAllMovies fonksiyonu
+import { LinearGradient } from 'expo-linear-gradient';
 
 const HomeScreen = () => {
   const [movies, setMovies] = useState([]);
@@ -10,7 +10,7 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const fetchMovies = async () => {
-      const movieData = await getMovies();
+      const movieData = await getAllMovies(); // Tüm filmleri çekiyoruz
       setMovies(movieData);
       setLoading(false);
     };
@@ -24,8 +24,8 @@ const HomeScreen = () => {
 
   return (
     <LinearGradient
-      colors={['#a8c0ff', '#3f4c6b']} // Geçişli renkler
-      style={styles.container} // Tüm ekranı kapsayacak şekilde
+      colors={['#a8c0ff', '#3f4c6b']}
+      style={styles.container}
     >
       {loading ? (
         <Text style={styles.loadingText}>Loading...</Text>
@@ -44,8 +44,8 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20, // Üst kısımdan biraz boşluk bırakmak için
-    paddingBottom: 20, // Alt kısımdan biraz boşluk bırakmak için
+    paddingTop: 20,
+    paddingBottom: 20,
   },
   loadingText: {
     textAlign: 'center',

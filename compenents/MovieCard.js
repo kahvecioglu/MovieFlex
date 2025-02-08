@@ -27,6 +27,9 @@ const MovieCard = ({ movie }) => {
       <TouchableOpacity style={styles.heartButton}>
         <Ionicons name="heart-outline" size={24} color="tomato" />
       </TouchableOpacity>
+
+      
+
     </View>
   );
 };
