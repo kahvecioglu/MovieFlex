@@ -1,12 +1,15 @@
-// services/MovieApi.js
-export const API_KEY = 'dbbe2f2e'; // OMDB API key
-export const BASE_URL = 'https://www.omdbapi.com/';
+const API_KEY = 'dbbe2f2e'; // OMDB API key
+const BASE_URL = 'https://www.omdbapi.com/';
 
-export const fetchMovies = async (searchQuery) => {
+export const getMovies = async () => {
   try {
-    const response = await fetch(`${BASE_URL}?apikey=${API_KEY}&s=${searchQuery}`);
+    const response = await fetch(`${BASE_URL}?apikey=${API_KEY}&s=movie&page=1`);
     const data = await response.json();
-    return data.Search; // Film verilerini döndürür
+    if (data.Response === 'True') {
+      return data.Search; // Movie listesi
+    } else {
+      throw new Error(data.Error);
+    }
   } catch (error) {
     console.error('Error fetching movies:', error);
     return [];
