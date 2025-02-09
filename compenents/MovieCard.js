@@ -18,8 +18,8 @@ const MovieCard = ({ movie }) => {
       } catch (error) {
         console.error('Error loading favorites from AsyncStorage:', error);
       }
-    };
-
+    };   
+ 
     loadFavorites();
   }, [movie.id]);
 
