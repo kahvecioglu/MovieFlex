@@ -78,7 +78,7 @@ const MovieCard = ({ movie, addToFavorites, removeFromFavorites, isFavorite }) =
 const styles = StyleSheet.create({
   card: {
     width: '50%',
-    marginBottom: 20,
+    marginBottom: 10,
     backgroundColor: '#3b8d99',
     borderRadius: 15,
     overflow: 'hidden',
