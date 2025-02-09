@@ -35,7 +35,7 @@ const MovieCard = ({ movie }) => {
         setIsFavorite(true);
       }
     } catch (error) {
-      console.error('Error saving movie to favorites:', error);
+      console.error('Kaydederken hata oluştu:', error);
     }
   };
 
@@ -49,22 +49,22 @@ const MovieCard = ({ movie }) => {
       await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
       setIsFavorite(false);
     } catch (error) {
-      console.error('Error removing movie from favorites:', error);
-    }
+      console.error('Silerken hata oluştu::', error);
+    } 
   };
 
   const toggleFavorite = () => {
     if (isFavorite) {
       Alert.alert(
-        'Remove from Favorites',
-        'Are you sure you want to remove this movie from your favorites?',
+        'Uyarı !!',
+        'Favorilerden kaldırmak istediğinize emin misiniz ?',
         [
           {
-            text: 'Cancel',
+            text: 'Hayır',
             style: 'cancel',
           },
           {
-            text: 'Remove',
+            text: 'Evet',
             onPress: () => removeFromFavorites(movie),
             style: 'destructive',
           },

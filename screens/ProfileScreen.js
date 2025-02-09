@@ -19,16 +19,18 @@ const ProfileScreen = () => {
     };
 
     loadFavorites();
-  }, []); // Sadece ilk renderda çalışması için boş array
+  }, []); // Only run once when component mounts
 
   const handleAddToFavorites = async (movie) => {
     try {
-      // UI hemen güncellenir
+      // Step 1: UI update (state update) immediately
       const updatedFavorites = [...favorites, movie];
-      setFavorites(updatedFavorites); // Favori listesi state'ini anında güncelle
+      setFavorites(updatedFavorites);
 
-      // AsyncStorage'a kaydedilir
+      // Step 2: Save updated favorites to AsyncStorage
       await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+
+      console.log("Movie added to favorites:", movie);
     } catch (error) {
       console.error('Error adding movie to favorites:', error);
     }
@@ -36,12 +38,14 @@ const ProfileScreen = () => {
 
   const handleRemoveFromFavorites = async (movie) => {
     try {
-      // UI hemen güncellenir
+      // Step 1: UI update (state update) immediately
       const updatedFavorites = favorites.filter((item) => item.id !== movie.id);
-      setFavorites(updatedFavorites); // Favori listesi state'ini anında güncelle
+      setFavorites(updatedFavorites);
 
-      // AsyncStorage'a kaydedilir
+      // Step 2: Save updated favorites to AsyncStorage
       await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+
+      console.log("Movie removed from favorites:", movie);
     } catch (error) {
       console.error('Error removing movie from favorites:', error);
     }
@@ -76,7 +80,6 @@ const ProfileScreen = () => {
           )}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
-          key={`flatlist-${favorites.length}`}
         />
       </View>
     </LinearGradient>
