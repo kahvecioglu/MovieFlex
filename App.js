@@ -1,29 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { createStackNavigator } from '@react-navigation/stack'; // Stack Navigator'ı import ediyoruz
+import { createStackNavigator } from '@react-navigation/stack';
+import { FavoritesProvider } from '../MovieFlex/compenents/FavoritesContext'; // Context provider'ı import ediyoruz
 import HomeScreen from '../MovieFlex/screens/HomeScreen';
 import SearchScreen from '../MovieFlex/screens/SearchScreen';
 import ProfileScreen from '../MovieFlex/screens/ProfileScreen';
 import DetailsScreen from '../MovieFlex/screens/DetailsScreen';
+import { StatusBar } from 'react-native'; 
 
 const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator(); // Stack Navigator'ı tanımlıyoruz
+const Stack = createStackNavigator();
 
 function MovieTabs() {
-  const [favorites, setFavorites] = useState([]);
-
-  const addToFavorites = (movie) => {
-    setFavorites((prevFavorites) => {
-      if (prevFavorites.some((fav) => fav.id === movie.id)) {
-        return prevFavorites.filter((fav) => fav.id !== movie.id);
-      } else {
-        return [...prevFavorites, movie];
-      }
-    });
-  };
-
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -40,59 +30,38 @@ function MovieTabs() {
         },
         tabBarLabel: () => null,
         tabBarActiveTintColor: 'tomato',
-        tabBarInactiveTintColor: 'gray',
+        tabBarInactiveTintColor: 'white',
         tabBarStyle: {
-          backgroundColor: '#3f4c6b',
-          borderTopWidth: 0,
-          elevation: 0,
+          position: 'absolute',
+          backgroundColor: 'rgba(0, 0, 0, 0.83)', // Yarı saydam arka plan
+          borderTopWidth: 0, // Üst çizgiyi kaldır
+          elevation: 0, // Android gölgesini kaldır
         },
-        headerStyle: {
-          backgroundColor: '#a8c0ff',
-        },
-        headerTintColor: '#3f4c6b',
-        headerTitleAlign: 'center',
-      })}
-    >
-      <Tab.Screen
-        name="Filmler"
-        children={() => <HomeScreen addToFavorites={addToFavorites} />}
-        options={{
-          headerTitle: 'Tüm Filmler Burada',
-        }}
-      />
-      <Tab.Screen
-        name="Film ara"
-        children={() => <SearchScreen addToFavorites={addToFavorites} />}
-        options={{
-          headerTitle: 'Ne izlemek istersin ?',
-        }}
-      />
-      <Tab.Screen
-        name="Profil"
-        children={() => <ProfileScreen favorites={favorites} />}
-        options={{
-          headerTitle: 'Profil',
-        }}
-      />
+      })}>
+      <Tab.Screen name="Filmler" component={HomeScreen} options={{ headerShown: false }} />
+  <Tab.Screen name="Film ara" component={SearchScreen} options={{ headerShown: false }} />
+  <Tab.Screen name="Profil" component={ProfileScreen} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 }
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Home"
-          component={MovieTabs} // MovieTabs, Tab Navigator'ını içeriyor
-          options={{ headerShown: false }} // Tab Navigator'da header gösterilmesin
-        />
-        <Stack.Screen
-          name="Details"
-          component={DetailsScreen} // Stack Navigator'da Details ekranı
-          options={{ headerTitle: 'Movie Details' }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <FavoritesProvider>
+      <NavigationContainer>
+        {/* Üst barı açık mavi yapıyoruz */}
+        <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+        <Stack.Navigator
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: '#ADD8E6', // Açık mavi renk
+            },
+            headerTintColor: 'black', // Yazı rengini belirleme
+          }}>
+          <Stack.Screen name="Home" component={MovieTabs} options={{ headerShown: false }} />
+          <Stack.Screen name="Details" component={DetailsScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </FavoritesProvider>
   );
 }

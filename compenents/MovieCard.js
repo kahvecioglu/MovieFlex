@@ -1,114 +1,44 @@
-import React, { useEffect, useState } from 'react';
-import { TouchableOpacity, Text, Image, View, StyleSheet, Share, Alert } from 'react-native';
+import React from 'react';
+import { TouchableOpacity, Text, Image, View, StyleSheet, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage'ı import ediyoruz
+import { useNavigation } from '@react-navigation/native'; // Navigation için hook ekleniyor
+import { useFavorites } from '../compenents/FavoritesContext';
 
 const MovieCard = ({ movie }) => {
-  const navigation = useNavigation();
-  const [isFavorite, setIsFavorite] = useState(false);
-
-  useEffect(() => {
-    // Uygulama başladığında, favori filmleri AsyncStorage'tan alıyoruz.
-    const loadFavorites = async () => {
-      try {
-        const favorites = await AsyncStorage.getItem('favorites');
-        const favoritesArray = favorites ? JSON.parse(favorites) : [];
-        setIsFavorite(favoritesArray.some(fav => fav.id === movie.id)); // Eğer film favorilerdeyse, state'i güncelliyoruz
-      } catch (error) {
-        console.error('Error loading favorites from AsyncStorage:', error);
-      }
-    };   
- 
-    loadFavorites();
-  }, [movie.id]);
-
-  const saveToFavorites = async (movie) => {
-    try {
-      const favorites = await AsyncStorage.getItem('favorites');
-      const favoritesArray = favorites ? JSON.parse(favorites) : [];
-
-      // Eğer film favorilerde değilse, ekliyoruz
-      if (!favoritesArray.some(fav => fav.id === movie.id)) {
-        favoritesArray.push(movie);
-        await AsyncStorage.setItem('favorites', JSON.stringify(favoritesArray));
-        setIsFavorite(true);
-      }
-    } catch (error) {
-      console.error('Kaydederken hata oluştu:', error);
-    }
-  };
-
-  const removeFromFavorites = async (movie) => {
-    try {
-      const favorites = await AsyncStorage.getItem('favorites');
-      const favoritesArray = favorites ? JSON.parse(favorites) : [];
-
-      // Eğer film favorilerdeyse, çıkarıyoruz
-      const updatedFavorites = favoritesArray.filter(fav => fav.id !== movie.id);
-      await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
-      setIsFavorite(false);
-    } catch (error) {
-      console.error('Silerken hata oluştu::', error);
-    } 
-  };
+  const navigation = useNavigation(); // Navigation hook'unu kullan
+  const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
+  const isFavorite = favorites.some((fav) => fav.id === movie.id);
 
   const toggleFavorite = () => {
     if (isFavorite) {
-      Alert.alert(
-        'Uyarı !!',
-        'Favorilerden kaldırmak istediğinize emin misiniz ?',
-        [
-          {
-            text: 'Hayır',
-            style: 'cancel',
-          },
-          {
-            text: 'Evet',
-            onPress: () => removeFromFavorites(movie),
-            style: 'destructive',
-          },
-        ],
-        { cancelable: true }
-      );
+      removeFromFavorites(movie);
     } else {
-      saveToFavorites(movie);
+      addToFavorites(movie);
     }
   };
 
-  const shareMovie = async () => {
-    try {
-      await Share.share({
-        message: `Check out this movie: ${movie.original_title}`,
-      });
-    } catch (error) {
-      console.error('Error sharing movie:', error);
-    }
+  // Detay sayfasına yönlendirme fonksiyonu
+  const goToDetails = () => {
+    navigation.navigate('Details', { movie });
   };
 
-  const handleCardPress = () => {
-    navigation.navigate('Details', { movie: movie });
-  };
+  const { width } = Dimensions.get('window');
+  const cardWidth = width * 0.45;
+  const imageHeight = cardWidth * 1.5;
 
   return (
-    <TouchableOpacity style={styles.card} onPress={handleCardPress}>
-      <Image source={{ uri: movie.poster_path }} style={styles.image} />
+    <TouchableOpacity style={[styles.card, { width: cardWidth }]} onPress={goToDetails}>
+      <Image source={{ uri: movie.poster_path }} style={[styles.image, { height: imageHeight }]} />
+      <View style={styles.overlay} />
       <View style={styles.info}>
         <Text style={styles.title}>{movie.original_title}</Text>
-        <Text style={styles.releaseDate}>Release Date: {movie.release_date}</Text>
-        <Text style={styles.rating}>Rating: {movie.vote_average ? movie.vote_average : 'N/A'}</Text>
       </View>
-
-      <TouchableOpacity style={styles.heartButton} onPress={toggleFavorite}>
-        <Ionicons
-          name={isFavorite ? 'heart' : 'heart-outline'}
-          size={30}
-          color={isFavorite ? "red" : "gray"}
+      <TouchableOpacity style={styles.iconContainer} onPress={toggleFavorite}>
+        <Ionicons 
+          name={isFavorite ? 'heart' : 'heart-outline'} 
+          size={30} 
+          color={isFavorite ? '#ff6347' : '#fff'} 
         />
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.shareButton} onPress={shareMovie}>
-        <Ionicons name="share-social-outline" size={24} color="blue" />
       </TouchableOpacity>
     </TouchableOpacity>
   );
@@ -116,48 +46,51 @@ const MovieCard = ({ movie }) => {
 
 const styles = StyleSheet.create({
   card: {
-    width: '50%',
-    marginBottom: 10,
-    backgroundColor: '#3b8d99',
+    marginBottom: 15, 
+    backgroundColor: '#333',
     borderRadius: 15,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    position: 'relative',
     elevation: 5,
+    alignSelf: 'center',
   },
   image: {
     width: '100%',
-    height: 200,
+    borderRadius: 15,
+  },
+  overlay: {
+    position: 'absolute',
+    
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 15,
   },
   info: {
-    padding: 10,
+    position: 'absolute',
+    bottom: 20,
+    left: 0,
+    right: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
+    paddingHorizontal: 10,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#fff',
+    textAlign: 'center',
+    textShadowColor: '#000',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
-  releaseDate: {
-    fontSize: 14,
-    color: '#eee',
-  },
-  rating: {
-    fontSize: 14,
-    color: 'orange',
-  },
-  heartButton: {
+  iconContainer: {
     position: 'absolute',
     top: 10,
     right: 10,
-    padding: 5,
-  },
-  shareButton: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    padding: 5,
+    backgroundColor: 'rgba(255, 99, 71, 0.6)',
+    borderRadius: 50,
+    padding: 8,
+    zIndex: 2,
   },
 });
 

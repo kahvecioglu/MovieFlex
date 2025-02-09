@@ -1,6 +1,5 @@
-// HomeScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, StyleSheet, Text } from 'react-native';
+import { View, FlatList, StyleSheet, Text, Dimensions } from 'react-native';
 import MovieCard from '../compenents/MovieCard';
 import { getAllMovies } from '../services/MovieApi';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -37,7 +36,8 @@ const HomeScreen = ({ addToFavorites }) => {
           data={movies}
           renderItem={renderMovie}
           keyExtractor={(item) => item.id.toString()}
-          numColumns={2}
+          numColumns={2}  // İki sütunlu düzen
+          contentContainerStyle={styles.listContent}  // Liste içeriği düzeni
         />
       )}
     </LinearGradient>
@@ -55,6 +55,9 @@ const styles = StyleSheet.create({
     marginTop: '50%',
     fontSize: 18,
     color: '#fff',
+  },
+  listContent: {
+    alignItems: 'center', // Kartları yatayda ortalamak için
   },
 });
 
