@@ -1,11 +1,51 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import MovieCard from '../compenents/MovieCard';
 
-const ProfileScreen = ({ favorites, addToFavorites, removeFromFavorites }) => {
-  console.log('Favori filmlerin sayısı:', favorites.length); 
-  console.log('Favori filmler:', favorites); 
+const ProfileScreen = () => {
+  const [favorites, setFavorites] = useState([]);
+
+  useEffect(() => {
+    const loadFavorites = async () => {
+      try {
+        const favoritesData = await AsyncStorage.getItem('favorites');
+        const parsedFavorites = favoritesData ? JSON.parse(favoritesData) : [];
+        setFavorites(parsedFavorites);
+      } catch (error) {
+        console.error('Error loading favorites from AsyncStorage:', error);
+      }
+    };
+
+    loadFavorites();
+  }, []); // Sadece ilk renderda çalışması için boş array
+
+  const handleAddToFavorites = async (movie) => {
+    try {
+      // UI hemen güncellenir
+      const updatedFavorites = [...favorites, movie];
+      setFavorites(updatedFavorites); // Favori listesi state'ini anında güncelle
+
+      // AsyncStorage'a kaydedilir
+      await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+    } catch (error) {
+      console.error('Error adding movie to favorites:', error);
+    }
+  };
+
+  const handleRemoveFromFavorites = async (movie) => {
+    try {
+      // UI hemen güncellenir
+      const updatedFavorites = favorites.filter((item) => item.id !== movie.id);
+      setFavorites(updatedFavorites); // Favori listesi state'ini anında güncelle
+
+      // AsyncStorage'a kaydedilir
+      await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+    } catch (error) {
+      console.error('Error removing movie from favorites:', error);
+    }
+  };
 
   return (
     <LinearGradient colors={['#a8c0ff', '#3f4c6b']} style={styles.container}>
@@ -24,8 +64,8 @@ const ProfileScreen = ({ favorites, addToFavorites, removeFromFavorites }) => {
             <MovieCard
               movie={item}
               isFavorite={true} // Always true when on the favorites screen
-              addToFavorites={addToFavorites}
-              removeFromFavorites={removeFromFavorites} // Pass removeFromFavorites here
+              addToFavorites={handleAddToFavorites}
+              removeFromFavorites={handleRemoveFromFavorites}
             />
           )}
           keyExtractor={(item) => item.id.toString()}
