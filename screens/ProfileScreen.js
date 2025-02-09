@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import MovieCard from '../compenents/MovieCard';
 
@@ -9,8 +9,6 @@ const ProfileScreen = ({ favorites, addToFavorites, removeFromFavorites }) => {
 
   return (
     <LinearGradient colors={['#a8c0ff', '#3f4c6b']} style={styles.container}>
-   
-
       <Image
         source={{ uri: 'https://randomuser.me/api/portraits/men/75.jpg' }}
         style={styles.profileImage}
@@ -25,9 +23,9 @@ const ProfileScreen = ({ favorites, addToFavorites, removeFromFavorites }) => {
           renderItem={({ item }) => (
             <MovieCard
               movie={item}
-              isFavorite={true} // Her zaman favori ekranında olduğunda true olacak
+              isFavorite={true} // Always true when on the favorites screen
               addToFavorites={addToFavorites}
-              removeFromFavorites={removeFromFavorites}
+              removeFromFavorites={removeFromFavorites} // Pass removeFromFavorites here
             />
           )}
           keyExtractor={(item) => item.id.toString()}
@@ -50,12 +48,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     padding: 20,
-  },
-  heartButton: {
-    position: 'absolute',
-    top: 40,
-    right: 20,
-    padding: 10,
   },
   profileImage: {
     width: 200,

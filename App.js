@@ -5,6 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../MovieFlex/screens/HomeScreen';
 import SearchScreen from '../MovieFlex/screens/SearchScreen';
 import ProfileScreen from '../MovieFlex/screens/ProfileScreen';
+import DetailsScreen from '../MovieFlex/screens/DetailsScreen';
+
 
 const Tab = createBottomTabNavigator();
 
@@ -76,7 +78,11 @@ export default function App() {
             headerTitle: 'Profil',
             headerTitleAlign: 'center',
           }}
-        />
+        /><Tab.Screen
+        name="Details"
+        component={DetailsScreen}
+        options={{ headerTitle: 'Movie Details' }}
+      />
       </Tab.Navigator>
     </NavigationContainer>
   );

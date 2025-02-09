@@ -1,8 +1,11 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Share, Alert } from 'react-native';
+import { TouchableOpacity, Text, Image, View, StyleSheet, Share, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native'; // useNavigation hook'unu import ediyoruz
 
 const MovieCard = ({ movie, addToFavorites, removeFromFavorites, isFavorite }) => {
+  const navigation = useNavigation(); // navigation nesnesini buradan alıyoruz
+
   const shareMovie = async () => {
     try {
       await Share.share({
@@ -35,15 +38,20 @@ const MovieCard = ({ movie, addToFavorites, removeFromFavorites, isFavorite }) =
         { cancelable: true }
       );
     } else {
-   
       addToFavorites(movie);
     }
   };
 
-  return (
-    <View style={styles.card}>
-      <Image source={{ uri: movie.poster_path }} style={styles.image} />
+  const handleCardPress = () => {
+    // MovieCard'a tıklandığında, detaylar sayfasına yönlendiriyoruz
+    navigation.navigate('Details', { movie: movie }); // 'Details' ekranına movie verisini gönderiyoruz
+  };
+  
 
+  return (
+    <TouchableOpacity style={styles.card} onPress={handleCardPress}>
+      <Image source={{ uri: movie.poster_path }} style={styles.image} />
+      
       <View style={styles.info}>
         <Text style={styles.title}>{movie.original_title}</Text>
         <Text style={styles.releaseDate}>Release Date: {movie.release_date}</Text>
@@ -55,7 +63,7 @@ const MovieCard = ({ movie, addToFavorites, removeFromFavorites, isFavorite }) =
         <Ionicons 
           name={isFavorite ? 'heart' : 'heart-outline'} 
           size={24} 
-          color={isFavorite ? "red" : "gray"} // Favori ise kırmızı, değilse gri
+          color={isFavorite ? "red" : "gray"} 
         />
       </TouchableOpacity>
 
@@ -63,13 +71,12 @@ const MovieCard = ({ movie, addToFavorites, removeFromFavorites, isFavorite }) =
       <TouchableOpacity style={styles.shareButton} onPress={shareMovie}>
         <Ionicons name="share-social-outline" size={24} color="blue" />
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    
     width: '50%',
     marginBottom: 20,
     backgroundColor: '#3b8d99',
