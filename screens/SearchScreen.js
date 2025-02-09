@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, Text, TextInput, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient'; // LinearGradient ekleyin
+import { LinearGradient } from 'expo-linear-gradient';
 import { getAllMovies } from '../services/MovieApi';
 import MovieCard from '../compenents/MovieCard';
 
-const SearchScreen = () => {
+const SearchScreen = ({ addToFavorites }) => {
   const [movies, setMovies] = useState([]);
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ const SearchScreen = () => {
       try {
         const movieData = await getAllMovies();
         setMovies(movieData);
-        setFilteredMovies(movieData); // Başlangıçta tüm filmleri göster
+        setFilteredMovies(movieData);
       } catch (error) {
         console.error('Error fetching movies:', error);
       } finally {
@@ -26,28 +26,24 @@ const SearchScreen = () => {
     fetchMovies();
   }, []);
 
-  // Filtreleme işlemi
   useEffect(() => {
     if (searchQuery.trim() === '') {
-      setFilteredMovies(movies); // Eğer arama terimi boşsa, tüm filmleri göster
+      setFilteredMovies(movies);
     } else {
       const lowerCaseSearchQuery = searchQuery.toLowerCase();
       const filteredData = movies.filter((movie) =>
         movie.original_title.toLowerCase().includes(lowerCaseSearchQuery)
       );
-      setFilteredMovies(filteredData); // Filtrelenmiş veriyi güncelle
+      setFilteredMovies(filteredData);
     }
-  }, [searchQuery, movies]); // Arama terimi veya filmler değişirse, filtrele
+  }, [searchQuery, movies]);
 
   const renderMovie = ({ item }) => {
-    return <MovieCard movie={item} />;
+    return <MovieCard movie={item} addToFavorites={addToFavorites} />;
   };
 
   return (
-    <LinearGradient
-      colors={['#a8c0ff', '#3f4c6b']} // Diğer sayfalarla aynı gradient renkleri
-      style={styles.container}
-    >
+    <LinearGradient colors={['#a8c0ff', '#3f4c6b']} style={styles.container}>
       <TextInput
         style={styles.searchInput}
         placeholder="Film ara...."
@@ -60,7 +56,9 @@ const SearchScreen = () => {
         <FlatList
           data={filteredMovies}
           renderItem={renderMovie}
-           keyExtractor={(item) => item.movie_id.toString()}
+          keyExtractor={(item) => item.id.toString()}
+          numColumns={2} // İki sütunlu düzen
+          columnWrapperStyle={styles.row} // Satır arasındaki boşlukları ayarlıyoruz
         />
       )}
     </LinearGradient>
@@ -70,7 +68,7 @@ const SearchScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
+    paddingTop: 50,
     paddingBottom: 20,
     paddingHorizontal: 10,
   },
@@ -81,13 +79,16 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 20,
     paddingLeft: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)', // Input arka plan rengi
-    color: '#fff', // Input metin rengi
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    color: '#fff',
   },
   loadingText: {
     textAlign: 'center',
     fontSize: 18,
-    color: '#fff', // Yükleme metni rengi
+    color: '#fff',
+  },
+  row: {
+    justifyContent: 'space-between', // İki film arasına boşluk bırakacak
   },
 });
 

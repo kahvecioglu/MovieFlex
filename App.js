@@ -1,14 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import HomeScreen from '../MovieFlex/screens/HomeScreen'; // HomeScreen'i import ettik
-import SearchScreen from '../MovieFlex/screens/SearchScreen'; // SearchScreen bileşenini import ettik
-import ProfileScreen from '../MovieFlex/screens/ProfileScreen'; // ProfileScreen bileşenini import ettik
+import HomeScreen from '../MovieFlex/screens/HomeScreen';
+import SearchScreen from '../MovieFlex/screens/SearchScreen';
+import ProfileScreen from '../MovieFlex/screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const [favorites, setFavorites] = useState([]);
+
+  const addToFavorites = (movie) => {
+    setFavorites((prevFavorites) => {
+      if (prevFavorites.some((fav) => fav.id === movie.id)) {
+        return prevFavorites.filter((fav) => fav.id !== movie.id);
+      } else {
+        return [...prevFavorites, movie];
+      }
+    });
+  };
+
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -27,22 +39,23 @@ export default function App() {
             return <Ionicons name={iconName} size={size} color={color} />;
           },
           tabBarLabel: () => null,
-         
           tabBarActiveTintColor: 'tomato',
-          tabBarInactiveTintColor: 'gray',tabBarStyle: {
-            backgroundColor: '#3f4c6b', // Tab bar arka plan rengini değiştiriyoruz
-            borderTopWidth: 0, // Tab bar'ın üst kenarındaki çizgiyi kaldırıyoruz
-            elevation: 0, // Android için gölgeyi kaldırıyoruz
-          }, headerStyle: {
-            backgroundColor: '#a8c0ff', // Üst bar rengini koyu mavi yapıyoruz
+          tabBarInactiveTintColor: 'gray',
+          tabBarStyle: {
+            backgroundColor: '#3f4c6b',
+            borderTopWidth: 0,
+            elevation: 0,
           },
-          headerTintColor: '#3f4c6b', // Üst bardaki başlık rengini beyaz yapıyoruz
-          headerTitleAlign: 'center', // Başlığı ortalıyoruz
+          headerStyle: {
+            backgroundColor: '#a8c0ff',
+          },
+          headerTintColor: '#3f4c6b',
+          headerTitleAlign: 'center',
         })}
       >
         <Tab.Screen
           name="Filmler"
-          component={HomeScreen}
+          children={() => <HomeScreen addToFavorites={addToFavorites} />}
           options={{
             headerTitle: 'Tüm Filmler Burada',
             headerTitleAlign: 'center',
@@ -50,7 +63,7 @@ export default function App() {
         />
         <Tab.Screen
           name="Film ara"
-          component={SearchScreen}
+          children={() => <SearchScreen addToFavorites={addToFavorites} />}
           options={{
             headerTitle: 'Ne izlemek istersin ?',
             headerTitleAlign: 'center',
@@ -58,7 +71,7 @@ export default function App() {
         />
         <Tab.Screen
           name="Profil"
-          component={ProfileScreen}
+          children={() => <ProfileScreen favorites={favorites} />}
           options={{
             headerTitle: 'Profil',
             headerTitleAlign: 'center',

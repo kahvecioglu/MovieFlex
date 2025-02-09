@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Share } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Share, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const MovieCard = ({ movie }) => {
+const MovieCard = ({ movie, addToFavorites, removeFromFavorites, isFavorite }) => {
   const shareMovie = async () => {
     try {
       await Share.share({
@@ -12,38 +12,54 @@ const MovieCard = ({ movie }) => {
       console.error('Error sharing movie:', error);
     }
   };
-  const favoriyeekle = async () => {
-   
-  };
 
+  const toggleFavorite = () => {
+    if (isFavorite) {
+      Alert.alert(
+        'Remove from Favorites',
+        'Are you sure you want to remove this movie from your favorites?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Remove',
+            onPress: () => {
+              console.log('Removing from favorites:', movie.id);
+              removeFromFavorites(movie.id);
+            },
+            style: 'destructive',
+          },
+        ],
+        { cancelable: true }
+      );
+    } else {
+   
+      addToFavorites(movie);
+    }
+  };
 
   return (
     <View style={styles.card}>
-      {/* Film Resmi */}
       <Image source={{ uri: movie.poster_path }} style={styles.image} />
 
       <View style={styles.info}>
-        {/* Film Adı */}
         <Text style={styles.title}>{movie.original_title}</Text>
-
-        {/* Çıkış Tarihi */}
-        <Text style={styles.releaseDate}>
-          Release Date: {movie.release_date}
-        </Text>
-
-        
-        {/* IMDb Puanı */}
-        <Text style={styles.rating}>
-          Rating: {movie.vote_average ? movie.vote_average : 'N/A'}
-        </Text>
+        <Text style={styles.releaseDate}>Release Date: {movie.release_date}</Text>
+        <Text style={styles.rating}>Rating: {movie.vote_average ? movie.vote_average : 'N/A'}</Text>
       </View>
 
-      {/* Kalp Butonu */}
-      <TouchableOpacity style={styles.heartButton} onPress={favoriyeekle}>
-        <Ionicons name="heart-outline" size={24} color="tomato" />
+      {/* Favori butonu */}
+      <TouchableOpacity style={styles.heartButton} onPress={toggleFavorite}>
+        <Ionicons 
+          name={isFavorite ? 'heart' : 'heart-outline'} 
+          size={24} 
+          color={isFavorite ? "red" : "gray"} // Favori ise kırmızı, değilse gri
+        />
       </TouchableOpacity>
 
-      {/* Paylaş Butonu */}
+      {/* Paylaşım butonu */}
       <TouchableOpacity style={styles.shareButton} onPress={shareMovie}>
         <Ionicons name="share-social-outline" size={24} color="blue" />
       </TouchableOpacity>
@@ -53,8 +69,9 @@ const MovieCard = ({ movie }) => {
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
-    margin: 10,
+    
+    width: '50%',
+    marginBottom: 20,
     backgroundColor: '#3b8d99',
     borderRadius: 15,
     overflow: 'hidden',
@@ -62,7 +79,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    elevation: 30,
+    elevation: 5,
   },
   image: {
     width: '100%',
@@ -74,10 +91,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#fff',
   },
   releaseDate: {
     fontSize: 14,
-    color: 'black',
+    color: '#eee',
   },
   rating: {
     fontSize: 14,

@@ -1,10 +1,11 @@
+// HomeScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Text } from 'react-native';
 import MovieCard from '../compenents/MovieCard';
 import { getAllMovies } from '../services/MovieApi';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const HomeScreen = () => {
+const HomeScreen = ({ addToFavorites }) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -12,7 +13,6 @@ const HomeScreen = () => {
     const fetchMovies = async () => {
       try {
         const movieData = await getAllMovies();
-        console.log('Movie Data:', movieData); // Verileri konsola yazdır
         setMovies(movieData);
       } catch (error) {
         console.error('Error fetching movies:', error);
@@ -25,21 +25,18 @@ const HomeScreen = () => {
   }, []);
 
   const renderMovie = ({ item }) => {
-    return <MovieCard movie={item} />;
+    return <MovieCard movie={item} addToFavorites={addToFavorites} />;
   };
 
   return (
-    <LinearGradient
-      colors={['#a8c0ff', '#3f4c6b']}
-      style={styles.container}
-    >
+    <LinearGradient colors={['#a8c0ff', '#3f4c6b']} style={styles.container}>
       {loading ? (
         <Text style={styles.loadingText}>Loading...</Text>
       ) : (
         <FlatList
           data={movies}
           renderItem={renderMovie}
-          keyExtractor={(item) => item.id.toString()} // item.id'yi string'e çevir
+          keyExtractor={(item) => item.id.toString()}
           numColumns={2}
         />
       )}
