@@ -23,7 +23,7 @@ export default function DetailsScreen({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ccc', // Arka plan rengini buradan değiştirdik
+    backgroundColor: '#ccc',
   },
   image: {
     width: '100%',
@@ -56,21 +56,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   language: {
-    fontSize: 16,
-    color: '#555',
-    marginBottom: 10,
-  },
-  budget: {
-    fontSize: 16,
-    color: '#555',
-    marginBottom: 10,
-  },
-  revenue: {
-    fontSize: 16,
-    color: '#555',
-    marginBottom: 10,
-  },
-  genres: {
     fontSize: 16,
     color: '#555',
     marginBottom: 10,
